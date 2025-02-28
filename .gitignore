@@ -1,0 +1,22 @@
+# Dependencies
+node_modules/
+package-lock.json
+yarn.lock
+
+# Expo
+.expo/
+.expo-shared/
+
+# Build artifacts
+android/build/
+ios/Pods/
+ios/build/
+*.xcworkspace
+*.xcodeproj/
+
+# Debug files
+*.log
+*.DS_Store
+
+# Environment variables
+.env
