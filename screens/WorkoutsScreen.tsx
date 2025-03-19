@@ -1,36 +1,91 @@
-// WorkoutsScreen.tsx
-import React from 'react';
-import { View, Text, FlatList, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import {
+    View,
+    Text,
+    FlatList,
+    StyleSheet,
+    TextInput,
+    TouchableOpacity,
+} from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 
 type WorkoutData = {
     id: string;
     title: string;
+    type: string;
     duration: string;
     level: string;
 };
 
+// 🏋️‍♂️ **Workout Data with Types**
 const WORKOUTS_DATA: WorkoutData[] = [
-    { id: '1', title: 'Upper Body Strength', duration: '30 mins', level: 'Intermediate' },
-    { id: '2', title: 'Lower Body Power', duration: '45 mins', level: 'Advanced' },
-    { id: '3', title: 'Yoga Stretch', duration: '20 mins', level: 'Beginner' },
-    { id: '4', title: 'HIIT Cardio Burn', duration: '25 mins', level: 'Advanced' },
-    { id: '5', title: 'Pilates Core', duration: '35 mins', level: 'Intermediate' },
+    { id: '1', title: 'Upper Body Strength', type: 'Strength', duration: '30 mins', level: 'Intermediate' },
+    { id: '2', title: 'Lower Body Power', type: 'Strength', duration: '45 mins', level: 'Advanced' },
+    { id: '3', title: 'Yoga Stretch', type: 'Flexibility', duration: '20 mins', level: 'Beginner' },
+    { id: '4', title: 'HIIT Cardio Burn', type: 'Cardio', duration: '25 mins', level: 'Advanced' },
+    { id: '5', title: 'Pilates Core', type: 'Flexibility', duration: '35 mins', level: 'Intermediate' },
 ];
 
+// 🎯 **Workout Categories**
+const WORKOUT_TYPES = ['All', 'Strength', 'Cardio', 'Flexibility'];
+
 export default function WorkoutsScreen() {
+    const [searchQuery, setSearchQuery] = useState('');
+    const [selectedType, setSelectedType] = useState('All');
+
+    // 🔍 **Filter Workouts Based on Search & Type**
+    const filteredWorkouts = WORKOUTS_DATA.filter((workout) =>
+        (selectedType === 'All' || workout.type === selectedType) &&
+        workout.title.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    // 🎥 **Render Workout Cards**
     const renderItem = ({ item }: { item: WorkoutData }) => (
         <View style={styles.workoutCard}>
             <Text style={styles.workoutTitle}>{item.title}</Text>
+            <Text style={styles.workoutDetails}>Type: {item.type}</Text>
             <Text style={styles.workoutDetails}>Duration: {item.duration}</Text>
             <Text style={styles.workoutDetails}>Level: {item.level}</Text>
+            <TouchableOpacity style={styles.startButton}>
+                <Text style={styles.startButtonText}>Start Workout</Text>
+            </TouchableOpacity>
         </View>
     );
 
     return (
         <View style={styles.container}>
+            {/* 🏋️‍♂️ HEADER */}
             <Text style={styles.headerText}>Workouts</Text>
+
+            {/* 🔍 SEARCH BAR */}
+            <View style={styles.searchContainer}>
+                <Ionicons name="search-outline" size={20} color="#777" />
+                <TextInput
+                    style={styles.searchInput}
+                    placeholder="Search workouts..."
+                    value={searchQuery}
+                    onChangeText={setSearchQuery}
+                />
+            </View>
+
+            {/* 🎯 WORKOUT TYPE FILTERS */}
+            <View style={styles.filterContainer}>
+                {WORKOUT_TYPES.map((type) => (
+                    <TouchableOpacity
+                        key={type}
+                        style={[styles.filterButton, selectedType === type && styles.activeFilter]}
+                        onPress={() => setSelectedType(type)}
+                    >
+                        <Text style={[styles.filterText, selectedType === type && styles.activeFilterText]}>
+                            {type}
+                        </Text>
+                    </TouchableOpacity>
+                ))}
+            </View>
+
+            {/* 🏋️‍♂️ WORKOUT LIST */}
             <FlatList
-                data={WORKOUTS_DATA}
+                data={filteredWorkouts}
                 keyExtractor={(item) => item.id}
                 renderItem={renderItem}
                 contentContainerStyle={styles.listContentContainer}
@@ -39,6 +94,9 @@ export default function WorkoutsScreen() {
     );
 }
 
+// ──────────────────────────────────────────
+// 🎨 **Styles**
+// ──────────────────────────────────────────
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -51,6 +109,43 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         marginBottom: 16,
         textAlign: 'center',
+    },
+    searchContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#F3F4F6',
+        borderRadius: 8,
+        paddingHorizontal: 12,
+        paddingVertical: 8,
+        marginBottom: 12,
+    },
+    searchInput: {
+        flex: 1,
+        marginLeft: 8,
+        fontSize: 16,
+    },
+    filterContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        marginBottom: 12,
+    },
+    filterButton: {
+        paddingVertical: 6,
+        paddingHorizontal: 14,
+        borderRadius: 20,
+        backgroundColor: '#E5E7EB',
+    },
+    activeFilter: {
+        backgroundColor: '#7B52AB',
+    },
+    filterText: {
+        fontSize: 14,
+        fontWeight: '500',
+        color: '#555',
+    },
+    activeFilterText: {
+        color: '#FFF',
+        fontWeight: 'bold',
     },
     listContentContainer: {
         paddingBottom: 20,
@@ -70,4 +165,16 @@ const styles = StyleSheet.create({
         fontSize: 14,
         color: '#757575',
     },
+    startButton: {
+        marginTop: 10,
+        backgroundColor: '#7B52AB',
+        paddingVertical: 10,
+        borderRadius: 6,
+        alignItems: 'center',
+    },
+    startButtonText: {
+        color: '#FFF',
+        fontWeight: 'bold',
+    },
 });
+

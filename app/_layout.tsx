@@ -1,41 +1,36 @@
-// RootLayout.tsx (Expo Router setup)
+// AppNavigator.tsx
+
 import React from 'react';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import Ionicons from '@expo/vector-icons/Ionicons';
+import { createStackNavigator } from '@react-navigation/stack';
+import RootLayout from '../navigation/RootLayout';
+import VideoDetailScreen from '../screens/VideoDetailScreen';
 
-import HomeScreen from '../screens/HomeScreen';
-import WorkoutsScreen from '../screens/WorkoutsScreen';
-import ScheduleScreen from '../screens/ScheduleScreen';
-import ProfileScreen from '../screens/ProfileScreen';
-
-type TabRouteName = 'Home' | 'Workouts' | 'Schedule' | 'Profile';
-const icons: Record<TabRouteName, keyof typeof Ionicons.glyphMap> = {
-  Home: 'home',
-  Workouts: 'barbell',
-  Schedule: 'calendar',
-  Profile: 'person',
+// 1. Define the ParamList for your stack
+export type RootStackParamList = {
+  Tabs: undefined;  // No params for "Tabs"
+  VideoDetail: {
+    title: string;
+    videoUrl: string;
+    duration: number;
+  };
 };
 
-const Tab = createBottomTabNavigator();
+// 2. Create your stack using the typed param list
+const Stack = createStackNavigator<RootStackParamList>();
 
-export default function RootLayout() {
+export default function AppNavigator() {
   return (
-    // ❌ No NavigationContainer here
-    <Tab.Navigator
-      screenOptions={({ route }) => ({
-        headerShown: false,
-        tabBarIcon: ({ color, size }) => {
-          const iconName = icons[route.name as TabRouteName];
-          return <Ionicons name={iconName} size={size} color={color} />;
-        },
-        tabBarActiveTintColor: '#FF5722',
-        tabBarInactiveTintColor: 'gray',
-      })}
-    >
-      <Tab.Screen name="Home" component={HomeScreen} />
-      <Tab.Screen name="Workouts" component={WorkoutsScreen} />
-      <Tab.Screen name="Schedule" component={ScheduleScreen} />
-      <Tab.Screen name="Profile" component={ProfileScreen} />
-    </Tab.Navigator>
+    <Stack.Navigator>
+      <Stack.Screen
+        name="Tabs"
+        component={RootLayout}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="VideoDetail"
+        component={VideoDetailScreen}
+        options={{ title: 'Video Detail' }}
+      />
+    </Stack.Navigator>
   );
 }
