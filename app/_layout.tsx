@@ -4,6 +4,7 @@ import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import RootLayout from '../navigation/RootLayout';
 import VideoDetailScreen from '../screens/VideoDetailScreen';
+import WorkoutDetailScreen from '@/screens/WorkoutDetailScreen';
 
 // 1. Define the ParamList for your stack
 export type RootStackParamList = {
@@ -20,7 +21,7 @@ const Stack = createStackNavigator<RootStackParamList>();
 
 export default function AppNavigator() {
   return (
-    <Stack.Navigator>
+    <Stack.Navigator> 
       <Stack.Screen
         name="Tabs"
         component={RootLayout}
@@ -30,6 +31,10 @@ export default function AppNavigator() {
         name="VideoDetail"
         component={VideoDetailScreen}
         options={{ title: 'Video Detail' }}
+      />
+      <Stack.Screen
+        name="WorkoutDetail"
+        component={WorkoutDetailScreen}
       />
     </Stack.Navigator>
   );

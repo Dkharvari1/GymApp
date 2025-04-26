@@ -8,6 +8,7 @@ import {
     TouchableOpacity,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';  // <-- Import navigation hook
 
 type WorkoutData = {
     id: string;
@@ -30,26 +31,47 @@ const WORKOUTS_DATA: WorkoutData[] = [
 const WORKOUT_TYPES = ['All', 'Strength', 'Cardio', 'Flexibility'];
 
 export default function WorkoutsScreen() {
+    const navigation = useNavigation();            // <-- Use navigation
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedType, setSelectedType] = useState('All');
 
     // 🔍 **Filter Workouts Based on Search & Type**
-    const filteredWorkouts = WORKOUTS_DATA.filter((workout) =>
-        (selectedType === 'All' || workout.type === selectedType) &&
-        workout.title.toLowerCase().includes(searchQuery.toLowerCase())
+    const filteredWorkouts = WORKOUTS_DATA.filter(
+        (workout) =>
+            (selectedType === 'All' || workout.type === selectedType) &&
+            workout.title.toLowerCase().includes(searchQuery.toLowerCase())
     );
+
+    // Handle press event to navigate (or do something else)
+    const handleWorkoutPress = (workout: WorkoutData) => {
+        // Example of navigating to a detail screen, passing the workout data
+        navigation.navigate('WorkoutDetail', {
+            name: workout.title,
+            duration: parseInt(workout.duration),
+            instructions: 'No instructions provided',
+        });
+    };
 
     // 🎥 **Render Workout Cards**
     const renderItem = ({ item }: { item: WorkoutData }) => (
-        <View style={styles.workoutCard}>
+        <TouchableOpacity
+            style={styles.workoutCard}
+            onPress={() => handleWorkoutPress(item)} // <-- make entire card clickable
+        >
             <Text style={styles.workoutTitle}>{item.title}</Text>
             <Text style={styles.workoutDetails}>Type: {item.type}</Text>
             <Text style={styles.workoutDetails}>Duration: {item.duration}</Text>
             <Text style={styles.workoutDetails}>Level: {item.level}</Text>
-            <TouchableOpacity style={styles.startButton}>
+
+            {/* If you'd rather only make the Start Workout button clickable, 
+                you can place the onPress here instead: */}
+            <TouchableOpacity
+                style={styles.startButton}
+                onPress={() => handleWorkoutPress(item)} // <-- or just the button
+            >
                 <Text style={styles.startButtonText}>Start Workout</Text>
             </TouchableOpacity>
-        </View>
+        </TouchableOpacity>
     );
 
     return (
@@ -76,7 +98,12 @@ export default function WorkoutsScreen() {
                         style={[styles.filterButton, selectedType === type && styles.activeFilter]}
                         onPress={() => setSelectedType(type)}
                     >
-                        <Text style={[styles.filterText, selectedType === type && styles.activeFilterText]}>
+                        <Text
+                            style={[
+                                styles.filterText,
+                                selectedType === type && styles.activeFilterText
+                            ]}
+                        >
                             {type}
                         </Text>
                     </TouchableOpacity>
@@ -177,4 +204,3 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
 });
-
